@@ -1,5 +1,3 @@
-// Cliente API único para todo el frontend.
-// Usa rutas relativas "/api/v1" que Vite redirige (proxy) al backend en :3000.
 import {
   ApiResponse,
   Job,
@@ -10,8 +8,7 @@ import {
   JobInput,
 } from '../types';
 
-const API_BASE_URL = '/api/v1';
-const TOKEN_KEY = 'empleo_token';
+const API_BASE_URL = import.meta.env.VITE_API_URL ?? '/api/v1';
 
 // --- Manejo del token en localStorage ---
 export const tokenStore = {
