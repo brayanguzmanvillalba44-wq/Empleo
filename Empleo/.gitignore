@@ -1,0 +1,29 @@
+# Dependencias
+node_modules/
+
+# Build
+dist/
+build/
+
+# Base de datos SQLite (se genera con prisma migrate / seed)
+*.db
+*.db-journal
+
+# Cliente Prisma generado
+backend/src/generated/
+.prisma/
+
+# Variables de entorno locales (no subir secretos)
+.env.local
+.env.*.local
+
+# IDE / SO
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*

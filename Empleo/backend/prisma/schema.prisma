@@ -1,0 +1,94 @@
+// ============================================================
+//  Esquema de base de datos (Prisma + SQLite)
+//  Cuatro tablas separadas según los roles del sistema:
+//   - admins        -> Administradores (publican y gestionan vacantes)
+//   - clients       -> Clientes (ven vacantes y se postulan)
+//   - jobs          -> Trabajos / Vacantes
+//   - applications  -> Postulaciones de clientes a vacantes
+// ============================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Administrador: gestiona el panel y las vacantes.
+model Admin {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String // Se guarda siempre hasheada (bcrypt)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  jobs Job[] // Vacantes publicadas por este administrador
+
+  @@map("admins")
+}
+
+// Cliente: usuario final que busca empleo y se postula.
+model Client {
+  id        Int      @id @default(autoincrement())
+  firstName String
+  lastName  String
+  email     String   @unique
+  password  String // Se guarda siempre hasheada (bcrypt)
+  phone     String?
+  location  String?
+  headline  String? // Titular profesional (ej. "Desarrollador Frontend")
+  summary   String? // Resumen / acerca de
+  skills    String? // Habilidades separadas por comas
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  applications Application[] // Postulaciones realizadas por el cliente
+
+  @@map("clients")
+}
+
+// Trabajo / Vacante publicada por un administrador.
+model Job {
+  id           Int      @id @default(autoincrement())
+  adminId      Int // Administrador que la publicó
+  title        String
+  description  String
+  requirements String?
+  benefits     String?
+  location     String
+  type         String   @default("FULL_TIME") // FULL_TIME, PART_TIME, CONTRACT, INTERNSHIP, FREELANCE
+  modality     String   @default("ONSITE") // ONSITE, REMOTE, HYBRID
+  salaryMin    Int?
+  salaryMax    Int?
+  currency     String   @default("MXN")
+  status       String   @default("ACTIVE") // ACTIVE, CLOSED
+  category     String?
+  tags         String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  admin        Admin         @relation(fields: [adminId], references: [id], onDelete: Cascade)
+  applications Application[]
+
+  @@map("jobs")
+}
+
+// Postulación de un cliente a una vacante.
+model Application {
+  id          Int      @id @default(autoincrement())
+  jobId       Int
+  clientId    Int
+  status      String   @default("PENDING") // PENDING, REVIEWING, INTERVIEW, REJECTED, HIRED
+  coverLetter String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  job    Job    @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@unique([jobId, clientId]) // Un cliente no puede postularse 2 veces a la misma vacante
+  @@map("applications")
+}
