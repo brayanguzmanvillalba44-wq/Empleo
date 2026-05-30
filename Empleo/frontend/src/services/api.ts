@@ -8,7 +8,7 @@ import {
   JobInput,
 } from '../types';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL ?? '/api/v1';
+const API_BASE_URL = 'https://empleos-poo8.onrender.com/api/v1';
 
 // --- Manejo del token en localStorage ---
 export const tokenStore = {
