@@ -9,6 +9,7 @@ import {
 } from '../types';
 
 const API_BASE_URL = 'https://empleos-poo8.onrender.com/api/v1';
+const TOKEN_KEY = 'empleo_token';
 
 // --- Manejo del token en localStorage ---
 export const tokenStore = {
